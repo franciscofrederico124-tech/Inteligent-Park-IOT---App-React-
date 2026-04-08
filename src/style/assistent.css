@@ -1,0 +1,161 @@
+.gray-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: rgb(219, 219, 219);
+    color: #333;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    box-sizing: border-box;
+    /* Removido width: 100% para o Grid pai controlar no Desktop */
+}
+
+.gray-header {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 20px 30px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+    flex-shrink: 0;
+}
+
+.gray-header h2 {
+    margin: 0;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.gray-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.06);
+    overflow: hidden; /* Evita que o chat quebre o layout pai */
+    box-sizing: border-box;
+}
+
+/* Container de mensagens */
+.gray-chat {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 10px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 15px;
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Área de Input */
+.gray-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding-bottom: 5px; /* Respiro interno */
+}
+
+.gray-input input {
+    flex: 1;
+    padding: 15px 20px;
+    border: 2px solid rgba(0, 0, 0, 0.05);
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.93);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.gray-input input:focus {
+    outline: none;
+    border-color: #e67e22;
+    box-shadow: 0 0 12px rgba(230, 126, 34, 0.35);
+}
+
+.gray-input button {
+    padding: 12px 25px;
+    background: linear-gradient(135deg, #e67e22, #f39c12);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+/* --- RESPONSIVIDADE --- */
+
+@media (max-width: 1024px) {
+    .gray-layout {
+        /* Define largura total no mobile */
+        width: 100vw; 
+        /* Altura dinâmica descontando a NAV INFERIOR (ajuste os 70px se necessário) */
+        height: calc(100dvh - 70px); 
+        position: fixed;
+        top: 0;
+        left: 0;
+    }
+
+    .gray-main {
+        padding: 15px; /* Reduz padding para ganhar espaço em telas menores */
+    }
+
+    .gray-chat {
+        padding: 15px;
+    }
+
+    .bubble {
+        max-width: 85%; /* Bubbles mais largas no mobile */
+    }
+
+    .gray-input {
+        gap: 8px;
+    }
+
+    .gray-input input {
+        padding: 12px 15px;
+        font-size: 14px;
+    }
+
+    .gray-input button, 
+    .btn-clear-chat {
+        padding: 12px 15px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 600px) {
+    .gray-header {
+        padding: 15px 20px;
+    }
+    
+    .gray-header h2 {
+        font-size: 18px;
+    }
+
+    .welcome-title h1 {
+        font-size: 1.8rem;
+    }
+}
+
+/* Estilos de Bolhas (Mantidos) */
+.bubble {
+    padding: 12px 18px;
+    border-radius: 18px;
+    margin: 8px 0;
+    max-width: 75%;
+    word-wrap: break-word;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.user {
+    background: linear-gradient(135deg, #e67e22, #f39c12);
+    color: white;
+    align-self: flex-end;
+}
+
+.assistant {
+    background: #f8f9fa;
+    color: #2c3e50;
+    align-self: flex-start;
+    border: 1px solid #e9ecef;
+}
