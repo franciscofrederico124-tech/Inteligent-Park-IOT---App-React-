@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import style from '../style/home.module.css';
 import CardVaga from '../components/cardVaga';
 import LoadingDots from "../components/loading";
+import CheckSesssion from '../services/auth/checkSession';
+import getUser from '../services/auth/getUserData';
+import dataPark from "../services/park/dataPark";
 
 // Definição de tipos para melhor suporte ao TypeScript
 interface UserData {
@@ -11,90 +15,53 @@ interface UserData {
 
 interface ParkingData {
   free: number;
-  ocuped: number;
+  ocupped: number;
   total: number;
 }
 
 function Home() {
+  CheckSesssion();
+  const navigate = useNavigate();
+
   const [user, setUser] = useState<UserData>({ name: "", email: "" });
-  const [parkingData, setParkingData] = useState<ParkingData | null>(null);
+  const [parkingData, setParkData] = useState<ParkingData>({
+    "free": 0,
+    "ocupped": 0,
+    "total": 0
+  });
+
+  async function SETUSER() {
+    const user = await getUser();
+    setUser(user);
+  }
+
+  async function SETPARKDATA() {
+    const data = await dataPark();
+    setParkData(data)
+  }
+
 
   useEffect(() => {
-    let isMounted = true;
-    let socket: WebSocket | null = null;
 
-    // 1. Busca dados do usuário (REST)
-    const fetchUser = async () => {
-      try {
-        const response = await fetch("http://localhost:3000/app/statussession");
-        if (!response.ok) throw new Error("Falha na sessão");
-        
-        const res = await response.json();
+    const intervalId = setInterval(() => {
+      SETPARKDATA();
+      SETUSER();
+      console.log("Dados atualizados!");
+    }, 500);
 
-        if (isMounted && res?.user) {
-          setUser({
-            name: res.user.name || "Usuário",
-            email: res.user.email || ""
-          });
-        }
-      } catch (err) {
-        console.error("Erro ao buscar dados do usuário:", err);
-      }
-    };
-
-    fetchUser();
-
-    // 2. Configuração do WebSocket
-    try {
-      socket = new WebSocket("ws://localhost:3000/user/parkingdata");
-
-      socket.onmessage = (event) => {
-        if (!isMounted) return;
-        try {
-          const data: ParkingData = JSON.parse(event.data);
-          
-          setParkingData((prev) => {
-            // Só atualiza o estado se os valores mudarem (evita re-render)
-            const isDifferent = 
-              !prev || 
-              prev.free !== data.free || 
-              prev.ocuped !== data.ocuped || 
-              prev.total !== data.total;
-            
-            return isDifferent ? data : prev;
-          });
-        } catch (err) {
-          console.error("Erro ao processar dados do WebSocket:", err);
-        }
-      };
-
-      socket.onerror = (error) => {
-        console.error("Erro na conexão WebSocket:", error);
-      };
-
-    } catch (err) {
-      console.error("Não foi possível iniciar o WebSocket:", err);
-    }
-
-    // Cleanup: Executa ao desmontar o componente
-    return () => {
-      isMounted = false;
-      if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.close();
-      }
-    };
+    return () => clearInterval(intervalId);
   }, []);
 
   return (
     <div className={style.home}>
       <div className={style.header}>
         <h1> Olá, <span>{user.name || "Visitante"}</span> </h1>
-        
+
         <ul>
-          <li title="Como funciona" onClick={() => { window.location.href = "http://localhost:3000/app.html#how-it-works" }}>
+          <li title="Como funciona" onClick={() => { navigate("/assistente") }}>
             <i className="bi bi-question-circle"></i>
           </li>
-          <li title="Configurações" onClick={() => { window.location.href = "/configuracoes" }}>
+          <li title="Configurações" onClick={() => { navigate("/configuracoes") }}>
             <i className="bi bi-person-circle"></i>
           </li>
         </ul>
@@ -113,7 +80,7 @@ function Home() {
               />
               <CardVaga
                 title="Vagas ocupadas"
-                cont={parkingData.ocuped}
+                cont={parkingData.ocupped}
                 iconClass="car-front-fill text-danger"
               />
               <CardVaga
@@ -131,7 +98,6 @@ function Home() {
       </div>
 
       <div className={style.actualLocation}>
-        {/* Espaço para conteúdo futuro */}
       </div>
     </div>
   );

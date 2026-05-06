@@ -1,102 +1,202 @@
+/* --- Variáveis de Estilo --- */
+:root {
+    --primary-gradient: linear-gradient(135deg, #e67e22, #f39c12);
+    --bg-light: #ffffff;
+    --bg-chat-container: rgba(255, 255, 255, 0.92);
+    --text-main: #2c3e50;
+    --text-muted: #7f8c8d;
+    --shadow-soft: 0 4px 25px rgba(0, 0, 0, 0.1);
+    --border-color: rgba(0, 0, 0, 0.08);
+}
+
+/* --- Reset e Layout Base --- */
 .gray-layout {
     display: flex;
     flex-direction: column;
     height: 100vh;
-    background-color: rgb(219, 219, 219);
-    color: #333;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    box-sizing: border-box;
-    /* Removido width: 100% para o Grid pai controlar no Desktop */
+    background-color: var(--bg-light);
+    color: var(--text-main);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    overflow: hidden;
 }
 
-.gray-header {
-    background: rgba(255, 255, 255, 0.95);
-    padding: 20px 30px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
-    flex-shrink: 0;
+/* --- Header --- */
+.top-bar {
+    background-color: var(--bg-light);
+    border-bottom: 1px solid var(--border-color);
+    padding: 1rem 2rem;
+    z-index: 10;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
-.gray-header h2 {
+.header-text {
     margin: 0;
-    font-weight: 600;
-    color: #2c3e50;
+    font-size: 1.5rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
+.header-icon {
+    color: #e67e22;
+}
+
+/* --- Main Area --- */
 .gray-main {
     flex: 1;
     display: flex;
     flex-direction: column;
-    padding: 30px;
-    background: rgba(255, 255, 255, 0.06);
-    overflow: hidden; /* Evita que o chat quebre o layout pai */
-    box-sizing: border-box;
+    padding: 20px 30px;
+    background: #fdfdfd;
+    overflow: hidden;
 }
 
-/* Container de mensagens */
+/* --- Chat Container --- */
 .gray-chat {
     flex: 1;
     overflow-y: auto;
-    margin-bottom: 10px;
     padding: 20px;
-    background: rgba(255, 255, 255, 0.92);
-    border-radius: 15px;
-    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15);
+    background: var(--bg-chat-container);
+    border-radius: 20px;
+    box-shadow: var(--shadow-soft);
     display: flex;
     flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+    scrollbar-width: thin;
+    scrollbar-color: #f39c12 #f1f1f1;
 }
 
-/* Área de Input */
-.gray-input {
-    display: flex;
-    align-items: center;
+/* Boas-vindas */
+.welcome-title {
+    margin: auto !important;
+    text-align: center;
+}
+
+.welcome-title h1 {
+    color: #e67e22;
+    margin-bottom: 8px;
+}
+
+.welcome-title p {
+    color: var(--text-muted);
+}
+
+/* --- Mensagens (Bubbles) --- */
+.bubble {
+    padding: 12px 18px;
+    border-radius: 20px;
+    max-width: 75%;
+    word-wrap: break-word;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    position: relative;
+    transition: transform 0.2s ease;
+}
+
+.user {
+    background: var(--primary-gradient);
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+}
+
+.assistant {
+    background: #f1f3f5;
+    color: var(--text-main);
+    align-self: flex-start;
+    border: 1px solid #dee2e6;
+    border-bottom-left-radius: 4px;
+}
+
+.loading {
+    font-style: italic;
+    opacity: 0.7;
+}
+
+/* --- Formulário (O Novo gray-form) --- */
+.gray-form {
+    display: grid;
+    /* Grid dinâmico: 70% para input, e o restante divide entre os botões */
+    grid-template-columns: 1fr auto auto;
     gap: 10px;
     width: 100%;
-    padding-bottom: 5px; /* Respiro interno */
+    padding: 15px;
+    background: white;
+    border-radius: 30px;
+    box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.12);
+    border: 1px solid var(--border-color);
+    align-items: center;
 }
 
-.gray-input input {
-    flex: 1;
-    padding: 15px 20px;
-    border: 2px solid rgba(0, 0, 0, 0.05);
+.gray-form input {
+    width: 100%;
+    padding: 12px 20px;
+    border: 1px solid transparent;
+    background: #f8f9fa;
     border-radius: 25px;
-    background: rgba(255, 255, 255, 0.93);
     font-size: 1rem;
     transition: all 0.3s ease;
 }
 
-.gray-input input:focus {
+.gray-form input:focus {
     outline: none;
-    border-color: #e67e22;
-    box-shadow: 0 0 12px rgba(230, 126, 34, 0.35);
+    background: white;
+    border-color: #f39c12;
+    box-shadow: 0 0 8px rgba(230, 126, 34, 0.2);
 }
 
-.gray-input button {
-    padding: 12px 25px;
-    background: linear-gradient(135deg, #e67e22, #f39c12);
+/* Botões */
+.gray-form button {
+    padding: 12px 24px;
+    background: var(--primary-gradient);
     color: white;
     border: none;
     border-radius: 25px;
     cursor: pointer;
     font-weight: 600;
-    flex-shrink: 0;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.gray-form button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(230, 126, 34, 0.3);
+}
+
+.gray-form button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Botão de Limpar Especial */
+.btn-clear-chat {
+    background: #ecf0f1 !important;
+    color: #7f8c8d !important;
+}
+
+.btn-clear-chat:hover {
+    background: #dfe6e9 !important;
+    color: #2c3e50 !important;
+}
+
+/* --- Links formatados --- */
+.chat-link {
+    color: #e67e22;
+    text-decoration: underline;
+    font-weight: bold;
 }
 
 /* --- RESPONSIVIDADE --- */
 
 @media (max-width: 1024px) {
     .gray-layout {
-        /* Define largura total no mobile */
-        width: 100vw; 
-        /* Altura dinâmica descontando a NAV INFERIOR (ajuste os 70px se necessário) */
-        height: calc(100dvh - 70px); 
-        position: fixed;
-        top: 0;
-        left: 0;
+        height: calc(100dvh - 70px); /* Desconto da nav inferior do mobile */
     }
 
     .gray-main {
-        padding: 15px; /* Reduz padding para ganhar espaço em telas menores */
+        padding: 15px;
     }
 
     .gray-chat {
@@ -104,58 +204,29 @@
     }
 
     .bubble {
-        max-width: 85%; /* Bubbles mais largas no mobile */
-    }
-
-    .gray-input {
-        gap: 8px;
-    }
-
-    .gray-input input {
-        padding: 12px 15px;
-        font-size: 14px;
-    }
-
-    .gray-input button, 
-    .btn-clear-chat {
-        padding: 12px 15px;
-        font-size: 14px;
+        max-width: 85%;
     }
 }
 
 @media (max-width: 600px) {
-    .gray-header {
-        padding: 15px 20px;
+    .gray-form {
+        grid-template-columns: 1fr auto; /* Esconde um pouco no mobile ou quebra linha */
+        padding: 10px;
+        border-radius: 20px;
     }
     
-    .gray-header h2 {
-        font-size: 18px;
+    /* Faz o botão limpar ir para baixo ou sumir se não houver espaço */
+    .btn-clear-chat {
+        grid-column: span 1;
+        font-size: 12px;
+        padding: 8px 15px;
+    }
+
+    .header-text {
+        font-size: 1.2rem;
     }
 
     .welcome-title h1 {
-        font-size: 1.8rem;
+        font-size: 1.5rem;
     }
-}
-
-/* Estilos de Bolhas (Mantidos) */
-.bubble {
-    padding: 12px 18px;
-    border-radius: 18px;
-    margin: 8px 0;
-    max-width: 75%;
-    word-wrap: break-word;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.user {
-    background: linear-gradient(135deg, #e67e22, #f39c12);
-    color: white;
-    align-self: flex-end;
-}
-
-.assistant {
-    background: #f8f9fa;
-    color: #2c3e50;
-    align-self: flex-start;
-    border: 1px solid #e9ecef;
 }

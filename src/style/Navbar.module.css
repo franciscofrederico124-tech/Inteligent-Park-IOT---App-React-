@@ -41,7 +41,7 @@
   align-items: center;
   flex-direction: row;
   gap: 10px;
-  width: 80%;
+  width: 100%;
   padding: 16px;
 }
 
@@ -75,7 +75,7 @@
 
 /* Pseudo-elementos para os textos no Desktop */
 .dashboard:after { content: "Dashboard"; }
-.reservas:after { content: "Suas reservas"; }
+.reservas:after { content: "Sua localização"; }
 .configuracoes:after { content: "Configurações"; }
 .asssistente:after { content: "Assistente de IA"; }
 

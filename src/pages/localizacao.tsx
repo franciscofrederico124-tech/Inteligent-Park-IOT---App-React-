@@ -4,6 +4,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
 import 'leaflet-routing-machine';
+import { useNavigate } from 'react-router-dom';
 import '../style/reservas.css';
 import LoadingDots from '../components/loading';
 
@@ -62,13 +63,14 @@ const RoutingMachine = ({ from, to, setInfo }: any) => {
     return null;
 };
 
-export default function MapaReservas() {
+export default function Localizacao() {
+    const navigate = useNavigate();
     const [userPos, setUserPos] = useState<L.LatLng | null>(null);
     const [info, setInfo] = useState({ dist: "---", time: "---" });
     const [distanciaValor, setDistanciaValor] = useState<number | null>(null);
     const [status, setStatus] = useState({ text: "Localizando...", reservable: false });
     const [timeLeft, setTimeLeft] = useState<number>(0);
-    
+
     // Estado para os dados da sua API
     const [parkingStats, setParkingStats] = useState({ free: 0, ocuped: 0, total: 0 });
 
@@ -118,7 +120,7 @@ export default function MapaReservas() {
     // 3. Gerenciar Status (Distância + Ocupação + UI)
     useEffect(() => {
         if (distanciaValor === null) return;
-        
+
         if (timeLeft > 0) {
             setStatus({ text: "Vaga reservada!", reservable: false });
             return;
@@ -132,8 +134,8 @@ export default function MapaReservas() {
 
         const PODE_RESERVAR = distanciaValor <= 110;
         setStatus({
-            text: PODE_RESERVAR 
-                ? ` Pode reservar (${parkingStats.free} livres) ` 
+            text: PODE_RESERVAR
+                ? ` Pode reservar (${parkingStats.free} livres) `
                 : " Não pode reservar, está muito longe! ",
             reservable: PODE_RESERVAR
         });
@@ -145,10 +147,10 @@ export default function MapaReservas() {
 
         const duration = 120; // 2 minutos
         const expirationTime = Date.now() + duration * 1000;
-        
+
         localStorage.setItem("reserva_fim", expirationTime.toString());
         localStorage.setItem("reserva", JSON.stringify({ text: "Vaga reservada!", reservable: false }));
-        
+
         setTimeLeft(duration);
     }
 
@@ -176,13 +178,13 @@ export default function MapaReservas() {
         const secs = seconds % 60;
         return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
     };
-    
+
     return (
         <div className="reservas-wrapper">
             <header className="top-bar">
                 <div className="header-content">
                     <h1 className="header-text">
-                        Reservas <i className="bi bi-calendar header-icon"></i>
+                        Intituto Médio Privado de Tecnologias <i className="bi bi-pin header-icon"></i>
                     </h1>
                 </div>
             </header>
@@ -200,19 +202,14 @@ export default function MapaReservas() {
                     )}
                 </div>
                 <div className="reservas">
-                    <span className='data'>
-                        Distância: {distanciaValor !== null ? `${distanciaValor.toFixed(0)} m` : "---"}
-                        <i className={`status ${status.reservable ? 'canbe' : 'dontcanbe'}`}>
-                            {status.text} 
-                            {timeLeft > 0 && ` (${formatTime(timeLeft)})`}
-                        </i>
+                    <span className='canbe'>
+                        Esta a {distanciaValor !== null ? `${distanciaValor.toFixed(0)} m` : "---"} metros
                     </span>
-                    <button 
-                        disabled={!status.reservable || timeLeft > 0 || (parkingStats.free === 0 && timeLeft === 0)} 
-                        className={`btn-reservar ${(status.reservable && timeLeft === 0 && parkingStats.free > 0) ? '' : 'disabled'}`} 
-                        onClick={Reservar}
+                    <button
+                        className={`btn-reservar`}
+                        onClick={() => { navigate("/") }}
                     >
-                        {parkingStats.free === 0 && timeLeft === 0 ? "Lotado" : (timeLeft > 0 ? "Reservado" : "Reservar")}
+                        Ver dados
                     </button>
                 </div>
             </main>

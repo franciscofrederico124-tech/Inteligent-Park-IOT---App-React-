@@ -1,5 +1,8 @@
 import '../style/config.css';
+import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from "react";
+import url from "../hooks/url";
+import CheckSesssion from '../services/auth/checkSession';
 
 // Interface para melhor controle do usuário
 interface UserData {
@@ -8,19 +11,25 @@ interface UserData {
 }
 
 function SettingsLayout() {
+  const navigate = useNavigate();
+  CheckSesssion();
+
   const [user, setUser] = useState<UserData | null>(null);
   const [isAlert, setIsAlert] = useState({
     exib: false,
     text: "",
   });
 
+
   // 1. Busca a sessão ao carregar a página
   useEffect(() => {
+
+
     const fetchSession = async () => {
       try {
-        const response = await fetch("http://localhost:3000/app/statussession");
+        const response = await fetch(url.apiBase + "/auth/check");
         const res = await response.json();
-        
+
         if (response.ok && res?.user) {
           setUser(res.user);
         }
@@ -41,10 +50,10 @@ function SettingsLayout() {
         text: "Terminando..."
       });
 
-      const response = await fetch("http://localhost:3000/app/initsession/", {
+      const response = await fetch(url.apiBase + "/auth/logout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: "Nenhuma sessão ativa" }),
+
       });
 
       const res = await response.json();
@@ -59,7 +68,8 @@ function SettingsLayout() {
       // Redireciona após 1.5s para dar tempo do usuário ler
       if (isOk) {
         setTimeout(() => {
-          window.location.href = "http://localhost:3000/app.html";
+          localStorage.removeItem("chat_history");
+          navigate("/sign");
         }, 1500);
       } else {
         // Se der erro, esconde o alerta após 3s
@@ -75,6 +85,7 @@ function SettingsLayout() {
         text: "Erro de conexão com o servidor!"
       });
       setTimeout(() => setIsAlert({ exib: false, text: "" }), 3000);
+      navigate("/")
     }
   };
 
@@ -96,7 +107,7 @@ function SettingsLayout() {
       <main className="content-area">
         <div className="container-fluid p-4">
           <div className="row g-4">
-            
+
             {/* Card de Perfil */}
             <div className="col-md-6">
               <div className="perfilCard shadow-sm">
@@ -113,9 +124,7 @@ function SettingsLayout() {
                     <p className="text-muted small">
                       {user ? user.email : "---"}
                     </p>
-                    <p className="text-success small">
-                      Online <i className="bi bi-circle-fill text-success" style={{ fontSize: '8px' }}></i>
-                    </p>
+
                   </div>
                 </div>
 

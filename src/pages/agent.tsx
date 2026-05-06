@@ -1,7 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import "../style/assistent.css";
+import url from "../hooks/url";
+import CheckSesssion from "../services/auth/checkSession";
+import clearChat from "../hooks/clearChat";
 
-const AssistenteGray: React.FC = () => {
+function AssistenteGray() {
+    CheckSesssion();
     const [question, setQuestion] = useState("");
     const [messages, setMessages] = useState<{ role: "user" | "assistant"; content: string }[]>(() => {
         const saved = localStorage.getItem("chat_history");
@@ -17,8 +21,7 @@ const AssistenteGray: React.FC = () => {
     };
 
     useEffect(() => {
-        // Mantemos o localStorage com até 30 mensagens para ter o que resumir depois
-        const historyLimit = 30; 
+        const historyLimit = 30;
         const limitedMessages = messages.slice(-historyLimit);
         localStorage.setItem("chat_history", JSON.stringify(limitedMessages));
         scrollToBottom();
@@ -30,36 +33,23 @@ const AssistenteGray: React.FC = () => {
         window.location.href = "http://wofProject.netlify.app";
     }
 
-    const formatMessage = (text: string) => {
-        const url = "http://wofproject.netlify.app";
-        if (text.toLowerCase().includes(url)) {
-            const parts = text.split(new RegExp(`(${url})`, 'gi'));
-            return parts.map((part, i) => 
-                part.toLowerCase() === url 
-                    ? <a key={i} href="#" onClick={RedirectToOficialPage} className="chat-link">{part}</a> 
-                    : part
-            );
-        }
-        return text;
-    };
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    // Função separada para a lógica de envio (já que não há mais o submit automático)
+    const handleSendMessage = async () => {
         if (!question.trim() || isLoading) return;
 
-        const newMessages = [...messages, { role: "user", content: question }] as const;
+        const currentQuestion = question;
+        const newMessages = [...messages, { role: "user", content: currentQuestion }] as const;
+
         setMessages(newMessages);
         setIsLoading(true);
         setQuestion("");
 
         try {
             let compressedSummary = "";
-
-            // LÓGICA DE CONTEXTO: Se tiver mais de 12 mensagens, resume as antigas
             if (newMessages.length > 12) {
                 const olderMessages = newMessages.slice(0, -12);
                 try {
-                    const contextRes = await fetch("http://localhost:3000/ask/context", {
+                    const contextRes = await fetch(url.apiBase + "/assistent/ask/context", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ historyToCompress: olderMessages })
@@ -71,14 +61,13 @@ const AssistenteGray: React.FC = () => {
                 }
             }
 
-            // ENVIO PARA A API PRINCIPAL
-            const response = await fetch("http://localhost:3000/ask", {
+            const response = await fetch(url.apiBase + "/assitent/ask", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ 
-                    question: question,
-                    history: newMessages.slice(-12), // Últimas 12 intactas
-                    summary: compressedSummary     // Resumo das anteriores
+                body: JSON.stringify({
+                    question: currentQuestion,
+                    history: newMessages.slice(-12),
+                    summary: compressedSummary
                 })
             });
 
@@ -92,16 +81,36 @@ const AssistenteGray: React.FC = () => {
         }
     };
 
-    const clearChat = () => {
-        if(window.confirm("Limpar todo o histórico?")) {
-            localStorage.removeItem("chat_history");
-            setMessages([]);
-            setShowTitle(true);
+    // Detectar tecla Enter
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === "Enter") {
+            handleSendMessage();
         }
+    };
+
+    const formatMessage = (text: string) => {
+        const targetUrl = "http://wofproject.netlify.app";
+        if (text.toLowerCase().includes(targetUrl)) {
+            const parts = text.split(new RegExp(`(${targetUrl})`, 'gi'));
+            return parts.map((part, i) =>
+                part.toLowerCase() === targetUrl
+                    ? <a key={i} href="#" onClick={RedirectToOficialPage} className="chat-link">{part}</a>
+                    : part
+            );
+        }
+        return text;
     };
 
     return (
         <div className="gray-layout">
+            <header className="top-bar">
+                <div className="header-content">
+                    <h1 className="header-text">
+                        Agente de IA <i className="bi bi-robot header-icon"></i>
+                    </h1>
+                </div>
+            </header>
+
             <main className="gray-main">
                 <div className="gray-chat">
                     {showTitle && (
@@ -110,40 +119,50 @@ const AssistenteGray: React.FC = () => {
                             <p>Tire suas dúvidas sobre o Inteligent Park IOT</p>
                         </div>
                     )}
-                    
+
                     {messages.map((msg, idx) => (
                         <div key={idx} className={`bubble ${msg.role}`}>
                             {formatMessage(msg.content)}
                         </div>
                     ))}
-                    
+
                     {isLoading && (
-                        <div className="bubble assistant loading">Processando contexto...</div>
+                        <div className="bubble assistant loading">Processando...</div>
                     )}
                     <div ref={messagesEndRef} />
                 </div>
 
-                <form onSubmit={handleSubmit} className="gray-input">
+                {/* Refatorado: De form para div */}
+                <div className="gray-form">
                     <input
                         type="text"
                         value={question}
                         onChange={(e) => setQuestion(e.target.value)}
+                        onKeyDown={handleKeyDown} // Listener para o Enter
                         placeholder="Digite sua pergunta..."
-                        required
                         disabled={isLoading}
                     />
-                    <button type="submit" disabled={isLoading}>
+                    <button 
+                        type="button" 
+                        onClick={handleSendMessage} // Clique manual
+                        disabled={isLoading}
+                    >
                         {isLoading ? "..." : "Enviar"}
                     </button>
-                     {messages.length > 0 && (
-                        <button type="button" onClick={clearChat} className="btn-clear-chat ">
+                    
+                    {messages.length > 0 && (
+                        <button
+                            type="button"
+                            onClick={() => clearChat({ setMessages, setShowTitle })}
+                            className="btn-clear-chat"
+                        >
                             Limpar
                         </button>
                     )}
-                </form>
+                </div>
             </main>
         </div>
     );
-};
+}
 
 export default AssistenteGray;

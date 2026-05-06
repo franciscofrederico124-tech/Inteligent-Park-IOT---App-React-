@@ -24,7 +24,7 @@ function Navbar() {
             `${isActive ? style.active : ""} ${style.reservas}`
           }
         >
-          <i className="bi bi-calendar"></i>
+          <i className="bi bi-pin"></i>
         </NavLink>
 
         <NavLink
