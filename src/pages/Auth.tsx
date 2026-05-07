@@ -15,9 +15,8 @@ interface AlertState {
 }
 
 function Sign() {
-    useEffect(() => {
-        CheckSesssion("sign");
-    }, [])
+    CheckSesssion("sign");
+
 
     const navigate = useNavigate();
     const [isSignIn, setIsSignIn] = useState(true);
