@@ -15,7 +15,6 @@ interface AlertState {
 }
 
 function Sign() {
-    CheckSesssion("sign");
 
 
     const navigate = useNavigate();
@@ -136,6 +135,8 @@ function Sign() {
             console.log(err)
         }
     };
+
+    useEffect(() => { CheckSesssion("sign") });
 
     return (
         <div className="body">

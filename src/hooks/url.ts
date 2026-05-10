@@ -1,5 +1,5 @@
 const url = {
-    "apiBase": "http://localhost:3000",
+    "apiBase": "https://inteligent-park-iot-back-end.onrender.com",
 }
 
 export default url;
