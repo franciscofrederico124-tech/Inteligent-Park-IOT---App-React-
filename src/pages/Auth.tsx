@@ -136,7 +136,7 @@ function Sign() {
         }
     };
 
-    useEffect(() => { CheckSesssion("sign") });
+    useEffect(() => { CheckSesssion("sign") }, []);
 
     return (
         <div className="body">
