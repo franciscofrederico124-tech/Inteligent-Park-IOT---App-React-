@@ -58,7 +58,7 @@ function Home() {
         <h1> Olá, <span>{user.name || "Visitante"}</span> </h1>
 
         <ul>
-          <li title="Como funciona" onClick={() => { window.location.href = "http://localhost:1000/#como-funciona" }}>
+          <li title="Como funciona" onClick={() => { window.location.href = "https://inteligent-park-iot-landing-page.vercel.app#como-funciona" }}>
             <i className="bi bi-question-circle"></i>
           </li>
           <li title="Configurações" onClick={() => { navigate("/configuracoes") }}>
