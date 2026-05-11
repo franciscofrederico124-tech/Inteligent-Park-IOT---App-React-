@@ -6,7 +6,7 @@ import LoadingDots from "../components/loading";
 import CheckSesssion from '../services/auth/checkSession';
 import getUser from '../services/auth/getUserData';
 import dataPark from "../services/park/dataPark";
-
+  
 // Tipagens para TypeScript
 interface UserData {
   name: string;
