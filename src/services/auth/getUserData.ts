@@ -1,10 +1,10 @@
 import url from "../../hooks/url";
 
 export default async function getUser() {
-    const data = await fetch(url.apiBase + "/auth/check");
-    const res = await data.json();
+    const data = localSotage.getItem('user');
+    const res = JSON.parse(data);
 
-    if (res.success && res && res.user != null) {
+    if (res && res.user != null) {
         return res.user;
     }
     else {

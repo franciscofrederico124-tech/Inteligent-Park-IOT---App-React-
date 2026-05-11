@@ -15,7 +15,7 @@ interface AlertState {
 }
 
 function Sign() {
-  
+    CheckSesssion("sign");
     const navigate = useNavigate();
     const [isSignIn, setIsSignIn] = useState(true);
     
@@ -32,8 +32,6 @@ function Sign() {
         type: '',
         show: false
     });
-    
-    useEffect(() => { CheckSesssion("sign") }, [navigate]);
 
     // Função para mostrar alerta
     const showAlert = (message: string, type: 'success' | 'error' | 'info') => {
@@ -82,7 +80,7 @@ function Sign() {
             }
 
             showAlert('Login efetuado com sucesso!', 'success');
-            if (res.user) localStorage.setItem('user', JSON.string(res.user));
+            if (res.user) localStorage.setItem('user', JSON.stringify(res.user));
             ClearCampos();
             setTimeout(() => navigate("/"), 1000);
 
