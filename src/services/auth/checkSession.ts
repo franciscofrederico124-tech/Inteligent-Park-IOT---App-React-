@@ -1,25 +1,14 @@
-import { useNavigate } from "react-router-dom";
-import url from "../../hooks/url";
+mexport default function CheckSesssion(type?: string) {
+    const user = localStorage.getItem('user');
 
-export default async function CheckSesssion(origin = "") {
-    const navigate = useNavigate();
+    if (type === "sign") {
 
-    if (origin == "sign") {
-        const data = await fetch(url.apiBase + "/auth/check");
-        const res = await data.json();
-        if (!res.success || !res.user) {
-            navigate("/sign");
+        if (user) {
+            window.location.href = "/"; 
         }
-        else {
-            navigate("/");
+    } else {
+      if (!user) {
+            window.location.href = "/login"; 
         }
-    }
-    else {
-        const data = await fetch(url.apiBase + "/auth/check");
-        const res = await data.json();
-        if (!res.success || !res.user) {
-            navigate("/sign");
-        }
-
     }
 }
