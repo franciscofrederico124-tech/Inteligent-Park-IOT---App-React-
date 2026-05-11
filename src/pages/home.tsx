@@ -71,7 +71,7 @@ function Home() {
         <ul>
           <li 
             title="Como funciona" 
-            onClick={() => { window.location.href = "https://inteligent-park-iot-landing-page.vercel.app#como-funciona" }}
+            onClick={() => { navigate('https://inteligent-park-iot-landing-page.vercel.app/')}
           >
             <i className="bi bi-question-circle"></i>
           </li>
