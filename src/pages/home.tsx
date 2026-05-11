@@ -7,7 +7,7 @@ import CheckSesssion from '../services/auth/checkSession';
 import getUser from '../services/auth/getUserData';
 import dataPark from "../services/park/dataPark";
 
-// Definição de tipos para melhor suporte ao TypeScript
+// Tipagens para TypeScript
 interface UserData {
   name: string;
   email: string;
@@ -20,34 +20,45 @@ interface ParkingData {
 }
 
 function Home() {
+  // Verifica a sessão logo ao carregar
   CheckSesssion();
   const navigate = useNavigate();
 
   const [user, setUser] = useState<UserData>({ name: "", email: "" });
-  const [parkingData, setParkData] = useState<ParkingData>({
-    "free": 0,
-    "ocupped": 0,
-    "total": 0
-  });
+  const [parkingData, setParkData] = useState<ParkingData | null>(null);
 
-  async function SETUSER() {
-    const user = await getUser();
-    setUser(user);
+  // Função para buscar dados do utilizador
+  async function fetchUser() {
+    try {
+      const userData = await getUser();
+      setUser(userData);
+    } catch (error) {
+      console.error("Erro ao procurar dados do utilizador:", error);
+    }
   }
 
-  async function SETPARKDATA() {
-    const data = await dataPark();
-    setParkData(data)
+  // Função para buscar dados do parque
+  async function fetchParkData() {
+    try {
+      const data = await dataPark();
+      setParkData(data);
+    } catch (error) {
+      console.error("Erro ao atualizar dados do parque:", error);
+    }
   }
-
 
   useEffect(() => {
+    // Carrega o utilizador apenas uma vez (evita redundância)
+    fetchUser();
 
+    // Primeira chamada imediata para os dados do parque
+    fetchParkData();
+
+    // Intervalo de atualização (Ajustado para 3 segundos para poupar recursos)
     const intervalId = setInterval(() => {
-      SETPARKDATA();
-      SETUSER();
-      console.log("Dados atualizados!");
-    }, 500);
+      fetchParkData();
+      console.log("Dados das vagas atualizados!");
+    }, 3000);
 
     return () => clearInterval(intervalId);
   }, []);
@@ -58,10 +69,16 @@ function Home() {
         <h1> Olá, <span>{user.name || "Visitante"}</span> </h1>
 
         <ul>
-          <li title="Como funciona" onClick={() => { window.location.href = "https://inteligent-park-iot-landing-page.vercel.app#como-funciona" }}>
+          <li 
+            title="Como funciona" 
+            onClick={() => { window.location.href = "https://vercel.app#como-funciona" }}
+          >
             <i className="bi bi-question-circle"></i>
           </li>
-          <li title="Configurações" onClick={() => { navigate("/configuracoes") }}>
+          <li 
+            title="Configurações" 
+            onClick={() => { navigate("/configuracoes") }}
+          >
             <i className="bi bi-person-circle"></i>
           </li>
         </ul>
@@ -98,6 +115,7 @@ function Home() {
       </div>
 
       <div className={style.actualLocation}>
+        {/* Espaço para futura implementação de localização ou mapa */}
       </div>
     </div>
   );
