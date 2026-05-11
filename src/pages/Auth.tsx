@@ -15,11 +15,10 @@ interface AlertState {
 }
 
 function Sign() {
-
-
+  
     const navigate = useNavigate();
     const [isSignIn, setIsSignIn] = useState(true);
-    const apiBase = url.apiBase;
+    
 
     // Estados compartilhados/individuais
     const [email, setEmail] = useState('');
@@ -33,6 +32,8 @@ function Sign() {
         type: '',
         show: false
     });
+    
+    useEffect(() => { CheckSesssion("sign") }, [navigate]);
 
     // Função para mostrar alerta
     const showAlert = (message: string, type: 'success' | 'error' | 'info') => {
@@ -67,7 +68,7 @@ function Sign() {
 
 
         try {
-            const response = await fetch(`${apiBase}/auth/login/`, {
+            const response = await fetch(`${url.apiBase}/auth/login/`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password })
@@ -81,7 +82,7 @@ function Sign() {
             }
 
             showAlert('Login efetuado com sucesso!', 'success');
-            if (res.token) localStorage.setItem('token', res.token);
+            if (res.user) localStorage.setItem('user', JSON.string(res.user));
             ClearCampos();
             setTimeout(() => navigate("/"), 1000);
 
@@ -101,7 +102,7 @@ function Sign() {
         }
 
         try {
-            const response = await fetch(`${apiBase}/auth/register/`, {
+            const response = await fetch(`${url.apiBase}/auth/register/`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ name, email, password })
@@ -136,8 +137,7 @@ function Sign() {
         }
     };
 
-    useEffect(() => { CheckSesssion("sign") }, []);
-
+    
     return (
         <div className="body">
             <main className="auth-main">
